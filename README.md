@@ -114,7 +114,7 @@ For Linux can install Stremio Service via Flatpak:
 flatpak install flathub com.stremio.Service
 ```
 
-Run the installed app with `Stremio Enhanced`.
+On Linux, Homebrew installs the published AppImage; no Node or Python build dependencies are required. Run the installed app with `stremio-enhanced` or search for **Stremio Enhanced** in the application menu.
 
 ## ⚙️ Build From Source
 1. Clone the repository: `git clone https://github.com/REVENGE977/stremio-enhanced.git`
