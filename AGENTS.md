@@ -7,7 +7,7 @@
 - There is no test script or test runner configured. `npm run lint` targets `src/**/*.ts`, but currently fails after a standard install because the manifest does not declare `@typescript-eslint/eslint-plugin`; use `npm run dist` for actionable verification unless repairing the lint tooling.
 - `npm run dev` rebuilds and launches Electron with detached DevTools. To debug without starting a streaming server, first run `npm run dist`, then use `npx electron ./dist/main.js --devtools --no-stremio-server`.
 - Package with `npm run build:<platform>:<arch>` (for example, `npm run build:linux:x64`); artifacts go to `release-builds/`.
-- `Formula/stremio-enhanced.rb` is the custom Homebrew formula. On a release, update its source URLs and SHA-256 values: macOS builds the tagged source archive, while Linux installs the architecture-specific AppImage release.
+- `Formula/stremio-enhanced.rb` is the custom Homebrew formula. On a release, update its versioned source URL and SHA-256 with the app version; it deliberately builds the tagged source archive rather than the tap checkout.
 
 ## Source and runtime boundaries
 

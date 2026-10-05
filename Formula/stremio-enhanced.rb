@@ -4,35 +4,16 @@ class StremioEnhanced < Formula
   url "https://github.com/REVENGE977/stremio-enhanced/archive/refs/tags/v1.2.0.tar.gz"
   sha256 "67f215829ca7262a259e825befad5672bebf6aa00652574a2a6da5fcb6dd5de1"
   license "MIT"
-  revision 2
+  revision 1
 
-  on_macos do
-    depends_on "python@3.14" => :build
-    depends_on "node"
-  end
-
-  on_linux do
-    resource "appimage" do
-      if Hardware::CPU.arm?
-        url "https://github.com/REVENGE977/stremio-enhanced/releases/download/v1.2.0/Stremio.Enhanced-1.2.0-arm64.AppImage"
-        sha256 "71e455afba897c58cd590ac9b4e57a5cbb3c2294e382d409d420c25dd55dd683"
-      else
-        url "https://github.com/REVENGE977/stremio-enhanced/releases/download/v1.2.0/Stremio.Enhanced-1.2.0.AppImage"
-        sha256 "6be927c60feb77921e7784552bc1a0ef1785125a2f25a6f482ac698ecd757c05"
-      end
-    end
-
-    resource "icon" do
-      url "https://raw.githubusercontent.com/REVENGE977/stremio-enhanced/v1.2.0/images/icon.png"
-      sha256 "261a3512b3cceb113d810ddf4f6b1b9c5d6b93810dac8c2b25aea1d26dfae412"
-    end
-  end
+  depends_on "python@3.14" => :build
+  depends_on "node"
 
   def install
-    if OS.mac?
-      # Keep this aligned with the build-from-source instructions in README.md.
-      system "npm", "install", *std_npm_args(prefix: false, ignore_scripts: false)
+    # Keep this aligned with the build-from-source instructions in README.md.
+    system "npm", "install", *std_npm_args(prefix: false, ignore_scripts: false)
 
+    if OS.mac?
       if Hardware::CPU.arm?
         system "npm", "run", "build:mac:arm64"
         app_bundle = buildpath/"release-builds/mac-arm64/Stremio Enhanced.app"
@@ -44,11 +25,16 @@ class StremioEnhanced < Formula
       prefix.install app_bundle
       bin.write_exec_script prefix/"Stremio Enhanced.app/Contents/MacOS/Stremio Enhanced"
     elsif OS.linux?
-      resource("appimage").stage do
-        appimage = Dir["*.AppImage"].first
-        libexec.install appimage => "stremio-enhanced.AppImage"
+      if Hardware::CPU.arm?
+        system "npm", "run", "build:linux:arm64"
+        unpacked_dir = buildpath/"release-builds/linux-arm64-unpacked"
+      else
+        system "npm", "run", "build:linux:x64"
+        unpacked_dir = buildpath/"release-builds/linux-unpacked"
       end
-      (bin/"stremio-enhanced").write_env_script libexec/"stremio-enhanced.AppImage", APPIMAGE_EXTRACT_AND_RUN: "1"
+
+      libexec.install Dir["#{unpacked_dir}/*"]
+      bin.write_exec_script libexec/"stremio-enhanced"
 
       applications_dir = share/"applications"
       applications_dir.mkpath
@@ -66,7 +52,7 @@ class StremioEnhanced < Formula
 
       icon_dir = share/"icons/hicolor/1024x1024/apps"
       icon_dir.mkpath
-      resource("icon").stage { icon_dir.install "icon.png" => "stremio-enhanced.png" }
+      cp "images/icon.png", icon_dir/"stremio-enhanced.png"
     else
       odie "Stremio Enhanced is supported only on macOS and Linux"
     end
