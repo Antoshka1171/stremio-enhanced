@@ -13,6 +13,7 @@ import Helpers from "./Helpers";
 class StremioService {
     private static logger = getLogger("StremioService");
     private static execFileAsync = promisify(execFile);
+    private static startedByApp = false;
 
     public static start(): Promise<void> {
         return new Promise((resolve, reject) => {
@@ -40,6 +41,7 @@ class StremioService {
                 }
 
                 child.unref();
+                this.startedByApp = true;
 
                 this.logger.info("Stremio Service started.");
                 resolve();
@@ -362,6 +364,11 @@ class StremioService {
             this.logger.error(`Error terminating service: ${(e as Error).message}`);
             return 2; 
         }
+    }
+
+    public static terminateIfStartedByApp(): number | null {
+        if (!this.startedByApp) return null;
+        return this.terminate();
     }
     
     private static getStremioServicePid(): number | null {
