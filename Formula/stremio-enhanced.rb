@@ -47,6 +47,7 @@ class StremioEnhanced < Formula
         Icon=#{opt_prefix}/share/icons/hicolor/1024x1024/apps/stremio-enhanced.png
         Categories=AudioVideo;Video;
         Terminal=false
+        StartupWMClass=stremio-enhanced
       DESKTOP
 
       icon_dir = share/"icons/hicolor/1024x1024/apps"
