@@ -77,7 +77,12 @@ Stremio Enhanced is an Electron-based [Stremio](https://www.stremio.com/) deskto
 
 
 ## 📥 Downloads
+
+### Releases
+
 You can download the latest version from [the releases tab](https://github.com/REVENGE977/stremio-enhanced/releases). 
+
+### Winget (Windows)
 
 If you're on **Windows**, you can also install via winget:
 ```
@@ -99,6 +104,31 @@ winget install Stremio.StremioService
     - For Linux (arm64): `npm run build:linux:arm64`
     - For macOS (x86): `npm run build:mac:x64`
     - For macOS (arm64): `npm run build:mac:arm64`
+
+### Homebrew (macOS and Linux)
+
+Install via Homebrew:
+```
+brew tap REVENGE977/stremio-enhanced https://github.com/REVENGE977/stremio-enhanced
+brew install REVENGE977/stremio-enhanced/stremio-enhanced
+```
+
+Install Stremio Service via Homebrew: 
+```
+brew install --cask stremioservice
+```
+
+Run the installed app with `stremio-enhanced`. 
+
+On Linux, if the desktop menu does not detect Homebrew's application directory, create the user-level launcher link:
+
+```sh
+mkdir -p ~/.local/share/applications
+ln -sf "$(brew --prefix)/opt/stremio-enhanced/share/applications/stremio-enhanced.desktop" \
+  ~/.local/share/applications/stremio-enhanced.desktop
+```
+
+To complete setup launch app and follow instructions to install Stremio Service / server.js
 
 ## 🎨 Themes and Plugins
 
