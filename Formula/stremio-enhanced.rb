@@ -4,6 +4,7 @@ class StremioEnhanced < Formula
   url "https://github.com/REVENGE977/stremio-enhanced/archive/refs/tags/v1.2.0.tar.gz"
   sha256 "67f215829ca7262a259e825befad5672bebf6aa00652574a2a6da5fcb6dd5de1"
   license "MIT"
+  revision 1
 
   depends_on "python@3.14" => :build
   depends_on "node"
@@ -42,8 +43,8 @@ class StremioEnhanced < Formula
         Type=Application
         Name=Stremio Enhanced
         Comment=Electron-based Stremio client with plugins and themes support
-        Exec=stremio-enhanced
-        Icon=stremio-enhanced
+        Exec=#{opt_bin}/stremio-enhanced
+        Icon=#{opt_prefix}/share/icons/hicolor/1024x1024/apps/stremio-enhanced.png
         Categories=AudioVideo;Video;
         Terminal=false
       DESKTOP
