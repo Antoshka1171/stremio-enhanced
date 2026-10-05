@@ -94,6 +94,28 @@ You can also install Stremio Service (which is required for Stremio Enhanced to 
 winget install Stremio.StremioService
 ```
 
+### Homebrew (macOS and Linux)
+
+Install via Homebrew:
+```
+brew tap REVENGE977/stremio-enhanced https://github.com/REVENGE977/stremio-enhanced
+brew install REVENGE977/stremio-enhanced/stremio-enhanced
+```
+
+Install either Stremio Service (Recommended) or follow instructions to install server.js when first launching application.
+
+For macOS can install Stremio Service via Homebrew:
+```
+brew install --cask stremioservice
+```
+
+For Linux can install Stremio Service via Flatpak:
+```
+flatpak install flathub com.stremio.Service
+```
+
+Run the installed app with `Stremio Enhanced`.
+
 ## ⚙️ Build From Source
 1. Clone the repository: `git clone https://github.com/REVENGE977/stremio-enhanced.git`
 2. Navigate to the project directory: `cd stremio-enhanced`
@@ -104,31 +126,6 @@ winget install Stremio.StremioService
     - For Linux (arm64): `npm run build:linux:arm64`
     - For macOS (x86): `npm run build:mac:x64`
     - For macOS (arm64): `npm run build:mac:arm64`
-
-### Homebrew (macOS and Linux)
-
-Install via Homebrew:
-```
-brew tap REVENGE977/stremio-enhanced https://github.com/REVENGE977/stremio-enhanced
-brew install REVENGE977/stremio-enhanced/stremio-enhanced
-```
-
-Install Stremio Service via Homebrew: 
-```
-brew install --cask stremioservice
-```
-
-Run the installed app with `stremio-enhanced`. 
-
-On Linux, if the desktop menu does not detect Homebrew's application directory, create the user-level launcher link:
-
-```sh
-mkdir -p ~/.local/share/applications
-ln -sf "$(brew --prefix)/opt/stremio-enhanced/share/applications/stremio-enhanced.desktop" \
-  ~/.local/share/applications/stremio-enhanced.desktop
-```
-
-To complete setup launch app and follow instructions to install Stremio Service / server.js
 
 ## 🎨 Themes and Plugins
 
