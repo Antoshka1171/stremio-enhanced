@@ -1,39 +1,53 @@
 class StremioEnhanced < Formula
+  RELEASE_VERSION = "1.2.0".freeze
+  RELEASE_TAG = "v#{RELEASE_VERSION}".freeze
+
   desc "Electron-based Stremio client with plugins and themes support"
   homepage "https://github.com/REVENGE977/stremio-enhanced"
-  url "https://github.com/REVENGE977/stremio-enhanced/archive/refs/tags/v1.2.0.tar.gz"
+  url "https://github.com/REVENGE977/stremio-enhanced/archive/refs/tags/#{RELEASE_TAG}.tar.gz"
   sha256 "67f215829ca7262a259e825befad5672bebf6aa00652574a2a6da5fcb6dd5de1"
   license "MIT"
-  revision 1
+  revision 2
 
-  depends_on "python@3.14" => :build
-  depends_on "node"
+  # Update RELEASE_VERSION, the source checksum, and the platform archive
+  # checksums together when publishing a new release.
+  resource "release" do
+    on_macos do
+      if Hardware::CPU.arm?
+        url "https://github.com/REVENGE977/stremio-enhanced/releases/download/#{RELEASE_TAG}/mac-arm64.zip"
+        sha256 "94d87af7ebd2424b8e8285de0fa7e869781a2c5956b35cc7989af8a3055d7cbf"
+      else
+        url "https://github.com/REVENGE977/stremio-enhanced/releases/download/#{RELEASE_TAG}/mac-unpacked.zip"
+        sha256 "9d86eadb3166d6e30ff8dbba4c55d7cea8e957ee1b6fd91e3962be6db53c75ee"
+      end
+    end
+
+    on_linux do
+      if Hardware::CPU.arm?
+        url "https://github.com/REVENGE977/stremio-enhanced/releases/download/#{RELEASE_TAG}/linux-arm64-unpacked.zip"
+        sha256 "5b69b1729f9545e9a79d01c15a205a15c48bf17bf2201fb589ca24026a60fa7f"
+      else
+        url "https://github.com/REVENGE977/stremio-enhanced/releases/download/#{RELEASE_TAG}/linux-unpacked.zip"
+        sha256 "b11ccede96c9387201783e225f21f140c500216233ee69789ff006b919fa7342"
+      end
+    end
+  end
 
   def install
-    # Keep this aligned with the build-from-source instructions in README.md.
-    system "npm", "install", *std_npm_args(prefix: false, ignore_scripts: false)
-
     if OS.mac?
-      if Hardware::CPU.arm?
-        system "npm", "run", "build:mac:arm64"
-        app_bundle = buildpath/"release-builds/mac-arm64/Stremio Enhanced.app"
-      else
-        system "npm", "run", "build:mac:x64"
-        app_bundle = buildpath/"release-builds/mac/Stremio Enhanced.app"
+      resource("release").stage do
+        app_bundle = Dir["**/Stremio Enhanced.app"].first
+        odie "Release archive does not contain Stremio Enhanced.app" unless app_bundle
+        prefix.install app_bundle
       end
-
-      prefix.install app_bundle
       bin.write_exec_script prefix/"Stremio Enhanced.app/Contents/MacOS/Stremio Enhanced"
     elsif OS.linux?
-      if Hardware::CPU.arm?
-        system "npm", "run", "build:linux:arm64"
-        unpacked_dir = buildpath/"release-builds/linux-arm64-unpacked"
-      else
-        system "npm", "run", "build:linux:x64"
-        unpacked_dir = buildpath/"release-builds/linux-unpacked"
+      resource("release").stage do
+        unless File.executable?("stremio-enhanced")
+          odie "Release archive does not contain the Stremio Enhanced executable"
+        end
+        libexec.install Dir["*"]
       end
-
-      libexec.install Dir["#{unpacked_dir}/*"]
       bin.write_exec_script libexec/"stremio-enhanced"
 
       applications_dir = share/"applications"

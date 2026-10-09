@@ -96,6 +96,8 @@ winget install Stremio.StremioService
 
 ### Homebrew (macOS and Linux)
 
+Installs the matching prebuilt release archive using Homebrew; Node, Python, and npm are not required.
+
 Install via Homebrew:
 ```
 brew tap REVENGE977/stremio-enhanced https://github.com/REVENGE977/stremio-enhanced
