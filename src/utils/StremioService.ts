@@ -1,7 +1,7 @@
 import { getLogger } from "./logger";
 import { basename, join, resolve } from "path";
 import { existsSync, createWriteStream, unlinkSync } from "fs";
-import { execFile, spawn } from "child_process";
+import { execFile, execFileSync, spawn } from "child_process";
 import { promisify } from "util";
 import * as process from 'process';
 import { homedir } from 'os';
@@ -353,7 +353,13 @@ class StremioService {
             
             const pid = this.getStremioServicePid();
             if (pid) {
-                process.kill(pid, 'SIGTERM');
+                if (process.platform === "win32") {
+                    // stremio-runtime.exe is a child of stremio-service.exe.
+                    // /T ensures it is stopped along with the service process.
+                    execFileSync("taskkill", ["/PID", String(pid), "/T", "/F"], { stdio: "ignore" });
+                } else {
+                    process.kill(pid, 'SIGTERM');
+                }
                 this.logger.info("Stremio Service terminated.");
                 return 0; 
             } else {
@@ -368,6 +374,18 @@ class StremioService {
 
     public static terminateIfStartedByApp(): number | null {
         if (!this.startedByApp) return null;
+
+        if (process.platform === "linux") {
+            try {
+                execFileSync("flatpak", ["kill", "com.stremio.Service"], { stdio: "ignore" });
+                this.logger.info("Stopped Stremio Service started by Stremio Enhanced.");
+                return 0;
+            } catch (error) {
+                this.logger.error("Failed to stop the Flatpak Stremio Service: " + (error as Error).message);
+                return 2;
+            }
+        }
+
         return this.terminate();
     }
     
