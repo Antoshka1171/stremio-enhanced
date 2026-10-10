@@ -115,7 +115,7 @@ brew tap REVENGE977/stremio-enhanced https://github.com/REVENGE977/stremio-enhan
 brew install REVENGE977/stremio-enhanced/stremio-enhanced
 ```
 
-Install either Stremio Service (**Recommended**) or follow instructions to install server.js when first launching application.
+Either follow the instructions to download server.js when first launching stremio (**Recommended**) or install Stremio Service. 
 
 For macOS can install Stremio Service via Homebrew:
 ```
