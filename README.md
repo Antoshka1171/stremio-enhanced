@@ -94,6 +94,17 @@ You can also install Stremio Service (which is required for Stremio Enhanced to 
 winget install Stremio.StremioService
 ```
 
+## ⚙️ Build From Source
+1. Clone the repository: `git clone https://github.com/REVENGE977/stremio-enhanced.git`
+2. Navigate to the project directory: `cd stremio-enhanced`
+3. Install dependencies: `npm install`
+4. Build the project with electron-builder: 
+    - For Windows: `npm run build:win`
+    - For Linux (x64): `npm run build:linux:x64`
+    - For Linux (arm64): `npm run build:linux:arm64`
+    - For macOS (x86): `npm run build:mac:x64`
+    - For macOS (arm64): `npm run build:mac:arm64`
+
 ### Homebrew (macOS and Linux)
 
 Installs the matching prebuilt release archive using Homebrew; Node, Python, and npm are not required.
@@ -110,7 +121,7 @@ brew trust --cask REVENGE977/stremio-enhanced/stremio-enhanced
 brew install --cask REVENGE977/stremio-enhanced/stremio-enhanced
 ```
 
-Install either Stremio Service (Recommended) or follow instructions to install server.js when first launching application.
+Either follow the instructions to download server.js when first launching Stremio Enhanced (**Recommended**) or install Stremio Service.
 
 For macOS can install Stremio Service via Homebrew:
 ```
@@ -124,16 +135,10 @@ flatpak install flathub com.stremio.Service
 
 Run the installed app with `Stremio Enhanced`.
 
-## ⚙️ Build From Source
-1. Clone the repository: `git clone https://github.com/REVENGE977/stremio-enhanced.git`
-2. Navigate to the project directory: `cd stremio-enhanced`
-3. Install dependencies: `npm install`
-4. Build the project with electron-builder: 
-    - For Windows: `npm run build:win`
-    - For Linux (x64): `npm run build:linux:x64`
-    - For Linux (arm64): `npm run build:linux:arm64`
-    - For macOS (x86): `npm run build:mac:x64`
-    - For macOS (arm64): `npm run build:mac:arm64`
+Uninstall via Homebrew: 
+```
+brew uninstall stremio-enhanced
+```
 
 ## 🎨 Themes and Plugins
 

@@ -1,5 +1,5 @@
 import { join } from "path";
-import { mkdirSync, existsSync, writeFileSync } from "fs";
+import { mkdirSync, existsSync, writeFileSync, unlinkSync } from "fs";
 import Updater from "./core/Updater";
 import Properties from "./core/Properties";
 import logger from "./utils/logger";
@@ -9,7 +9,7 @@ import { IPC_CHANNELS, URLS, SERVER_JS_URL } from "./constants";
 import { app } from 'electron';
 if (process.platform === 'linux') app.commandLine.appendSwitch('gtk-version', '3');
 
-import { BrowserWindow, shell } from "electron";
+import { BrowserWindow, shell, ipcMain } from "electron";
 import StreamingServer from "./utils/StreamingServer";
 import Helpers from "./utils/Helpers";
 import StremioService from "./utils/StremioService";
@@ -29,6 +29,7 @@ const gotLock = app.requestSingleInstanceLock();
 const transparencyFlagPath = join(app.getPath("userData"), "transparency");
 const useStremioServiceFlagPath = join(app.getPath("userData"), "use_stremio_service_for_streaming");
 const useServerJSFlagPath = join(app.getPath("userData"), "use_server_js_for_streaming");
+const stopStremioServiceOnExitFlagPath = join(app.getPath("userData"), "stop_stremio_service_on_exit");
 const transparencyEnabled = existsSync(transparencyFlagPath);
 
 app.commandLine.appendSwitch('disable-features', 'BlockInsecurePrivateNetworkRequests,PrivateNetworkAccessSendPreflights');
@@ -87,7 +88,7 @@ async function createWindow() {
         visualEffectState: transparencyEnabled ? "active" : "followWindow",
         backgroundColor: "#00000000",
     });
-    
+
     mainWindow.setMenu(null);
     mainWindow.loadURL(URLS.STREMIO_WEB);
         
@@ -106,16 +107,29 @@ async function createWindow() {
         shell.openExternal(edata.url);
         return { action: "deny" };
     });
-    
+
     // Devtools flag
     if(process.argv.includes("--devtools")) { 
         logger.info("Developer tools flag detected. Opening DevTools in detached mode...");
         mainWindow.webContents.openDevTools({ mode: "detach" }); 
     }
     
-    // mainWindow.on('closed', () => {
-    //     if(!process.argv.includes("--no-stremio-service") && StremioService.isProcessRunning()) StremioService.terminate();
-    // });
+}
+
+function setupStopStremioServiceOnExitSetting() {
+    ipcMain.on(IPC_CHANNELS.SET_STOP_STREMIO_SERVICE_ON_EXIT, (_, enabled: unknown) => {
+        if (typeof enabled !== "boolean") return;
+
+        if (enabled) {
+            writeFileSync(stopStremioServiceOnExitFlagPath, "1");
+        } else if (existsSync(stopStremioServiceOnExitFlagPath)) {
+            unlinkSync(stopStremioServiceOnExitFlagPath);
+        }
+    });
+
+    ipcMain.handle(IPC_CHANNELS.GET_STOP_STREMIO_SERVICE_ON_EXIT, () => {
+        return existsSync(stopStremioServiceOnExitFlagPath);
+    });
 }
 
 // Use Stremio Service for streaming
@@ -189,6 +203,7 @@ app.on("ready", async () => {
     // setup IPC and create window
     setupPluginSettingsAPI();
     setupPluginAlertAPI();
+    setupStopStremioServiceOnExitSetting();
     createWindow();
     if(transparencyEnabled) setupWindowControls();
     setupUpdater();
@@ -322,6 +337,12 @@ app.on("window-all-closed", () => {
     
     if (process.platform !== "darwin") {
         app.quit();
+    }
+});
+
+app.on("will-quit", () => {
+    if (existsSync(stopStremioServiceOnExitFlagPath)) {
+        StremioService.terminateIfStartedByApp();
     }
 });
 

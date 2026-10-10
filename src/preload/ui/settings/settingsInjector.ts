@@ -1,5 +1,6 @@
 import { readdirSync } from "fs";
 import { join } from "path";
+import { ipcRenderer } from "electron";
 import { settingsBuilder } from "./settingsBuilder";
 import properties from "../../../core/Properties";
 import Helpers from "../../../utils/Helpers";
@@ -8,7 +9,7 @@ import logger from "../../../utils/logger";
 import ExtractMetaData from "../../../utils/ExtractMetaData";
 import { getDefaultThemeTemplate } from "../../../components/default-theme/defaultTheme";
 import { getAboutCategoryTemplate } from "../../../components/about-category/aboutCategory";
-import { STORAGE_KEYS, SELECTORS, FILE_EXTENSIONS } from "../../../constants";
+import { STORAGE_KEYS, SELECTORS, FILE_EXTENSIONS, IPC_CHANNELS } from "../../../constants";
 import { getThemeIcon, getPluginIcon, getAboutIcon } from "../../../utils/icons";
 import { getTransparencyStatus } from "../titleBar";
 import { setupBrowseModsButton } from "../mod/modBrowser";
@@ -17,6 +18,7 @@ import {
     setupCheckUpdatesOnStartupToggle,
     setupDiscordRpcToggle,
     setupTransparencyToggle,
+    setupStopStremioServiceOnExitToggle,
     setupGpuDropdown,
     setupExternalPlayerDropdown,
     setupExternalPlayerPathInputs
@@ -31,6 +33,8 @@ function writeAbout(): void {
         const currentVersion = Updater.getCurrentVersion();
         const checkForUpdatesOnStartup = localStorage.getItem(STORAGE_KEYS.CHECK_UPDATES_ON_STARTUP) === "true";
         const discordRpc = localStorage.getItem(STORAGE_KEYS.DISCORD_RPC) === "true";
+        const stopStremioServiceOnExit = await ipcRenderer.invoke(IPC_CHANNELS.GET_STOP_STREMIO_SERVICE_ON_EXIT) as boolean;
+        localStorage.setItem(STORAGE_KEYS.STOP_STREMIO_SERVICE_ON_EXIT, stopStremioServiceOnExit ? "true" : "false");
         const currentAngle = await gpuRendererAPI.getGpuRenderer();
         const currentExternalPlayer = (localStorage.getItem(STORAGE_KEYS.EXTERNAL_PLAYER) ?? 'disabled') as ExternalPlayer;
         const vlcCustomPath = localStorage.getItem(STORAGE_KEYS.EXTERNAL_PLAYER_VLC_PATH) ?? '';
@@ -39,7 +43,7 @@ function writeAbout(): void {
         const aboutCategory = document.querySelector(SELECTORS.ABOUT_CATEGORY);
         if (aboutCategory) {
             aboutCategory.innerHTML += getAboutCategoryTemplate(
-                currentVersion, checkForUpdatesOnStartup, discordRpc, isTransparencyEnabled, currentAngle, currentExternalPlayer, vlcCustomPath, mpvCustomPath
+                currentVersion, checkForUpdatesOnStartup, discordRpc, isTransparencyEnabled, stopStremioServiceOnExit, currentAngle, currentExternalPlayer, vlcCustomPath, mpvCustomPath
             );
         }
     }).catch(err => logger.error("Failed to write about section: " + err));
@@ -67,6 +71,7 @@ export function checkSettings() {
     setupCheckUpdatesOnStartupToggle();
     setupDiscordRpcToggle();
     setupTransparencyToggle();
+    setupStopStremioServiceOnExitToggle();
 
     if(process.platform != "darwin") setupGpuDropdown();
     setupExternalPlayerDropdown();

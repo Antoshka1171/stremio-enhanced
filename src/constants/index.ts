@@ -63,6 +63,7 @@ export const STORAGE_KEYS = {
     EXTERNAL_PLAYER: 'externalPlayer',
     EXTERNAL_PLAYER_VLC_PATH: 'externalPlayerVlcPath',
     EXTERNAL_PLAYER_MPV_PATH: 'externalPlayerMpvPath',
+    STOP_STREMIO_SERVICE_ON_EXIT: 'stopStremioServiceOnExit',
 } as const;
 
 /** Maps a player name to its custom-path storage key. */
@@ -93,6 +94,8 @@ export const IPC_CHANNELS = {
     SHOW_ALERT: 'show-alert',
     LAUNCH_EXTERNAL_PLAYER: 'launch-external-player',
     GET_EXTERNAL_PLAYER_PATHS: 'get-external-player-paths',
+    SET_STOP_STREMIO_SERVICE_ON_EXIT: 'set-stop-stremio-service-on-exit',
+    GET_STOP_STREMIO_SERVICE_ON_EXIT: 'get-stop-stremio-service-on-exit',
 } as const;
 
 // File extensions for mods

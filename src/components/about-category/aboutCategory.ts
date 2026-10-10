@@ -7,6 +7,7 @@ export function getAboutCategoryTemplate(
     checkForUpdatesOnStartup: boolean,
     discordRichPresence: boolean,
     enableTransparentThemes: boolean,
+    stopStremioServiceOnExit: boolean,
     currentAngle: string,
     currentExternalPlayer: ExternalPlayer = 'disabled',
     vlcCustomPath: string = '',
@@ -19,6 +20,7 @@ export function getAboutCategoryTemplate(
         .replace("{{ checkForUpdatesOnStartup }}", checkForUpdatesOnStartup ? "checked" : "")
         .replace("{{ discordrichpresence }}", discordRichPresence ? "checked" : "")
         .replace("{{ enableTransparentThemes }}", enableTransparentThemes ? "checked" : "")
+        .replace("{{ stopStremioServiceOnExit }}", stopStremioServiceOnExit ? "checked" : "")
         .replace("{{ disabled }}", process.platform == "darwin" ? "disabled" : "")
         .replace("{{ disabled_d3d11 }}", process.platform != "win32" ? "disabled" : "")
         .replace("{{ disabled_d3d9 }}", process.platform != "win32" ? "disabled" : "")
